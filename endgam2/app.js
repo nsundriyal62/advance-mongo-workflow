@@ -8,18 +8,23 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var expressSession = require('express-session');
 const flash= require("connect-flash");
+const passport = require('passport');
  
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
 app.use(expressSession({
   resave:false,
   saveUninitialized:false,
   secret:"khuch bhi likh skte h lodu" 
 }));
-
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
 app.use(flash());  
 app.use(logger('dev'));
 app.use(express.json());

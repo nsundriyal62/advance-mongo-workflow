@@ -2,22 +2,31 @@ var express = require('express');
 var router = express.Router();
 
 const userModel =require("./users");
-
+const { get } = require('mongoose');
+const localstrategy=require("passport-local");
+const passport = require('passport');
+passport.use(new localstrategy(userModel.authenticate()));
 
 router.get('/', function(req, res) {
   res.render('index');
 });  
 
+
+router.get('/profile', isLoggedIn,function(req, res) {
+  res.send('welcome to profile');
+}); 
 //advance mongodb concepts
 
-router.get('/create', async function(req,res){
-  const createduser=await userModel.create({
+router.get('/create', async function(req, res) {
+  try {
+    const createdUsers = await userModel.create([
+      {
         username: "naveen",
         Password: "securePassword123",
         nickname: "Johnny",
         description: "A passionate individual exploring the world of programming.",
         categories: ["Technology", "Programming", "Web Development"],
-        datecreated: new Date("2024-01-011T12:00:00Z"),
+        datecreated: new Date("2024-01-11T12:00:00Z"),
       },
       {
         username: "janenaveen",
@@ -31,12 +40,20 @@ router.get('/create', async function(req,res){
         username: "sam_coder",
         Password: "codingMaster789",
         nickname: "Sam",
-        description: "Full-stack developer with a lov e for open source projects.",
+        description: "Full-stack developer with a love for open source projects.",
         categories: ["Programming", "Web Development", "Open Source"],
         datecreated: new Date("2024-01-13T15:45:00Z"),
-  })
-  res.send(createduser);
+      }
+    ]);
+
+    res.send(createdUsers);
+  } catch (error) {
+    console.error("Error creating users:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
+
+
 
 //----------------------searching case insensitive in database----------------------------------------
 
@@ -82,11 +99,28 @@ router.get('/finddaterange', async function(req,res){
   res.send(data2);
 });
 
+//--------------------kisi bhi property k existance k based pe filter out krke output show krna-----
 
-router.get('/delete', async function(req,res){
-  await userModel.deleteMany({});
-  res.send("sab ud gya dosto ");
+router.get('/find1', async function(req,res){
+  let data3= await userModel.find({nickname: {$exists: true}});
+  res.send(data3);
 })
+
+
+//---------------finding in a range for elements-----------------
+
+router.get('/find2', async function(req,res){
+  let data4= await userModel.find({
+    $expr:{
+      $and:[
+        {$gte: [{$strLenCP: '$nickname'},0]},
+        {$lte: [{$strLenCP: '$nickname'},6]}
+      ]
+    }
+  });
+  res.send(data4);
+})
+
 
 //flash used on the principal of cross routing
 
@@ -102,6 +136,52 @@ router.get('/failed1', function(req, res) {
   res.send("check kar lodu");
 });
 
+//---------------authentication and making register route---------------------
+
+router.get("/register", function(req,res){
+  var userdata= new userModel({
+    username:String,
+    secret:String
+  });
+
+  userModel.register(userdata, req.body.Password)
+  .then(function(registereduser){
+    passport.authenticate("local")(req,res,function(){
+      res.redirect('/profile');
+    })
+  })
+
+});
+
+router.post("/login", passport.authenticate("local", {
+  successRedirect:"/profile",
+  failureRedirect: "/",
+}),function(req,res){})
+
+router.get("/logout", function(req,res,next){
+  req.logOut(function(err){
+    if(err){return next(err);}
+    res.redirect('/');
+  });
+});
+
+function isLoggedIn(req,res,next){
+  if(req.authenticate()){
+    return next();
+  }
+  res.redirect("/");
+}
+
+
+
+
+
+
+//-----------------deleting rout---------------
+router.get('/delete', async function(req,res){
+  await userModel.deleteMany({});
+  res.send("sab ud gya dosto ");
+})
 
 module.exports = router;
 
