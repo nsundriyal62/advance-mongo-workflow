@@ -5,7 +5,7 @@ const postmodel= require("./post");
 const passport = require('passport');
 
 const localStrategy= require("passport-local");
-passport.authenticate(new localStrategy(usermodel.authenticate()));
+passport.use(new localStrategy(usermodel.authenticate()));
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -13,6 +13,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/profile', isLoggedIn,function(req, res, next) {
   res.send("ban gya");
+});
+
+router.get('/login',function(req, res, next) {
+  res.render('login', { title: 'Express' });
 });
 
 
@@ -28,12 +32,12 @@ router.post("/register", function(req,res,next){
       res.redirect("/profile"); 
     })
   })
-})
+});
 
-router.get('/login', passport.authenticate("local", {
+router.post('/login', passport.authenticate("local", {
   successRedirect: "/profile",
-  failureRedirect: "/"
-})  , function(req, res, next) {
+  failureRedirect: "/",
+}), function(req, res, next) {
 });
 
 router.get('/logout', function(req,res,next){
