@@ -11,3 +11,11 @@ data associatuion- ek model se dusre model k data ko link krna id k thorugh
 # steps for data association
     1. do model banao
     2. then route k sath khelo 
+
+
+
+
+# uuid multer
+    uuid hume unique naam deta h files k liye 
+    uar multer image upload krne m help krta h 
+    
