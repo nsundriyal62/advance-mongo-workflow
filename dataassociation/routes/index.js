@@ -3,6 +3,8 @@ var router = express.Router();
 const usermodel= require("./users");
 const postmodel= require("./post");
 const passport = require('passport');
+const upload = require('./multer');
+
 
 const localStrategy= require("passport-local");
 passport.use(new localStrategy(usermodel.authenticate()));
@@ -24,6 +26,13 @@ router.get('/login',function(req, res, next) {
 
 router.get('/feed',function(req, res, next) {
   res.render('feed');
+});
+
+router.post('/upload', upload.single('file'), function(req, res, next) {
+  if(!req.file){
+    res.status(404).send("no files are given");
+  }
+  res.send("file send successfully");
 });
 
 router.post("/register", function(req,res,next){
