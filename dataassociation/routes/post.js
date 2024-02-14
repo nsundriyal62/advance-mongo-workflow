@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
+const { stringify } = require('uuid');
 
 // Define the post schema
 const postSchema = new mongoose.Schema({
-  postText: {
+  imagetext: {
     type: String,
     required: true,
+  },
+  image:{
+    type: String
   },
   user:{
     type: mongoose.Schema.Types.ObjectId,

@@ -28,11 +28,22 @@ router.get('/feed',function(req, res, next) {
   res.render('feed');
 });
 
-router.post('/upload', upload.single('file'), function(req, res, next) {
+router.post('/upload', isLoggedIn, upload.single('file'), async function(req, res, next) {
   if(!req.file){
     res.status(404).send("no files are given");
   }
   res.send("file send successfully");
+  // jo file upload hui h use save kro as a post and uska postid user ko do and post ko userid do
+ const user= await usermodel.findOne({username: req.session.passport.user});
+ const post= await postmodel.create({
+  image: req.file.filename,
+  imagetext: req.body.filecaption,
+  user: user._id
+ })
+
+ user.posts.push(post._id);
+ await user.save();
+ res.send("done");
 });
 
 router.post("/register", function(req,res,next){
