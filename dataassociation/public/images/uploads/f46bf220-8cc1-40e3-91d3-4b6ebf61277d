@@ -1,0 +1,12 @@
+so the use cases for our model are 
+
+first one is  personalised recommendation - as we know personalised recommendation is the crux. our model is age restricted and Provide personalized treatment recommendations  based on a patient's specific  symptoms,  and medical history by natural language processing in large language model known as LLM. our model process the natural language and convert it into sql query and then find the solutionn iterating  it over our database. 	
+
+2.We are planning to integrate the Ancient Ayurvedic knowldge with the generative AI to generate the required response according the student or practitioner's use and for global promotion too.
+
+3.Point to be noted that Initially we had our end users as the Ayurvedic students or practitioners who'll get the  ancient knowledge spread over 150 texts but now  he or she  won't have to look to multiple resources for a single disease.
+
+5.for better acurracy of provided medicine  our model  Serve 
+a reference for evidence-based Ayurvedic drug information.
+
+
