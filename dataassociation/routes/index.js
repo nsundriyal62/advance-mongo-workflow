@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 router.get('/profile', isLoggedIn, async function(req, res, next) {
   const user= await usermodel.findOne({
     username: req.session.passport.user
-  });
+  }).populate("posts");
   res.render('profile',  { user } );
 });
 
@@ -30,21 +30,22 @@ router.get('/feed',function(req, res, next) {
 
 router.post('/upload', isLoggedIn, upload.single('file'), async function(req, res, next) {
   if(!req.file){
-    res.status(404).send("no files are given");
+    return res.status(404).send("No files were given");
   }
-  res.send("file send successfully");
-  // jo file upload hui h use save kro as a post and uska postid user ko do and post ko userid do
- const user= await usermodel.findOne({username: req.session.passport.user});
- const post= await postmodel.create({
-  image: req.file.filename,
-  imagetext: req.body.filecaption,
-  user: user._id
- })
 
- user.posts.push(post._id);
- await user.save();
- res.send("done");
+  // jo file upload hui h use save kro as a post and uska postid user ko do and post ko userid do
+  const user = await usermodel.findOne({username: req.session.passport.user});
+  const post = await postmodel.create({
+    image: req.file.filename,
+    imagetext: req.body.filecaption,
+    user: user._id
+  });
+
+  user.posts.push(post._id);
+  await user.save();
+  res.redirect("/profile");
 });
+
 
 router.post("/register", function(req,res,next){
   const userdata= new usermodel({
